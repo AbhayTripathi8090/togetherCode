@@ -1,8 +1,9 @@
-import express from "express";
+import express, { response } from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import path from "path";
+import axios from "axios";
 
 const app = express();
 app.use(cors());
@@ -62,6 +63,28 @@ io.on("connection", (socket) => {
   socket.on("languageChange",({roomId,language})=>{
     io.to(roomId).emit("languageUpdate",language)
   })
+
+
+socket.on("compileCode", async ({ code, roomId, language, version }) => {
+  if (rooms.has(roomId)) {
+    const room = rooms.get(roomId);
+    try {
+      const response = await axios.post(
+        "https://emkc.org/api/v2/piston/execute",
+        { language, version, files: [{ content: code }] }
+      );
+      room.output = response.data.run?.output || "";
+      io.to(roomId).emit("codeResponse", response.data);
+    } catch (err) {
+      console.error("Execution error:", err.response?.data || err.message);
+      io.to(roomId).emit("codeError", {
+        message: err.response?.data?.message || "Execution failed",
+      });
+    }
+  }
+});
+
+
 
   // Leave room manually
   socket.on("leaveRoom", () => {
