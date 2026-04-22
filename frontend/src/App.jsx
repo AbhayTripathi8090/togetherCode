@@ -3,12 +3,13 @@ import { io } from "socket.io-client";
 import "./App.css";
 
 import useSocketEvents from "./hooks/useSocketEvents";
+import { socketServerUrl } from "./config/socket";
 import JoinRoom from "./components/JoinRoom";
 import Sidebar from "./components/Sidebar";
 import CodeEditor from "./components/CodeEditor";
 import OutputConsole from "./components/OutputConsole";
 
-const socket = io("https://togethercode.onrender.com");
+const socket = io(socketServerUrl);
 
 function App() {
   const [joined, setJoined] = useState(false);

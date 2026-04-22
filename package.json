@@ -1,20 +1,26 @@
 {
   "name": "togethercode",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "main": "backend/index.js",
   "type": "module",
   "scripts": {
+    "backend:start": "node backend/index.js",
+    "backend:dev": "nodemon --watch backend --ext js backend/index.js",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node backend/index.js",
-    "dev": "nodemon backend/index.js",
-    "build": "npm install && cd frontend && npm install && npm run build"
+    "start": "npm run backend:start",
+    "dev": "npm run backend:dev",
+    "build": "npm run frontend:build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Real-time collaborative code editor with separated backend and frontend structure.",
   "dependencies": {
     "axios": "^1.11.0",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
   },

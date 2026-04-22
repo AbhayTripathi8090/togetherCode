@@ -10,6 +10,12 @@ yarn-error.log*
 
 # Environment variables
 .env
+.env.*
+backend/.env
+frontend/.env
+!.env.example
+!backend/.env.example
+!frontend/.env.example
 
 # Build directories
 dist/
@@ -37,3 +43,4 @@ bower_components/
 *.tgz
 temp_auto_push.bat
 temp_interactive_push.bat
+branch_structure.json
