@@ -2,7 +2,7 @@ export default function JoinRoom({ roomId, setRoomId, userName, setUserName, joi
   return (
     <div className="flex h-screen items-center justify-center bg-gradient-to-br from-blue-900 to-indigo-900 text-white">
       <div className="w-80 rounded-2xl border border-blue-400/20 bg-white/5 p-8 text-center shadow-lg backdrop-blur-lg">
-        <h1 className="mb-5 text-2xl font-bold">Join code room</h1>
+        <h1 className="mb-5 text-2xl font-bold">Join code room collaborate</h1>
         <input
           type="text"
           placeholder="Room ID"
