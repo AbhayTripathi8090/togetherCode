@@ -8,7 +8,8 @@ import Sidebar from "./components/Sidebar";
 import CodeEditor from "./components/CodeEditor";
 import OutputConsole from "./components/OutputConsole";
 
-const socket = io("https://togethercode.onrender.com");
+const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:5500";
+const socket = io(socketUrl);
 
 function App() {
   const [joined, setJoined] = useState(false);

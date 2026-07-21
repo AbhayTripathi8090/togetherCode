@@ -1,18 +1,45 @@
-import express, { response } from "express";
+import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import path from "path";
 import axios from "axios";
+import fs from "fs";
+
+function loadEnv(filePath = path.resolve(".env")) {
+  if (!fs.existsSync(filePath)) return;
+
+  const lines = fs.readFileSync(filePath, "utf8").split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    const rawValue = trimmed.slice(separatorIndex + 1).trim();
+    const value = rawValue.replace(/^['"]|['"]$/g, "");
+
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+}
+
+loadEnv();
 
 const app = express();
 app.use(cors());
+
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+const port = Number(process.env.PORT) || 5500;
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // React app port
+    origin: clientUrl,
     methods: ["GET", "POST"],
   },
 });
@@ -111,15 +138,21 @@ socket.on("compileCode", async ({ code, roomId, language, version }) => {
   });
 });
 
-const port = process.env.PORT || 5000;
-
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "/frontend/dist")));
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
 });
 
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(`Port ${port} is already in use. Change PORT in .env and VITE_SOCKET_URL in frontend/.env to the same port.`);
+    process.exit(1);
+  }
+
+  throw error;
+});
 
 server.listen(port, () => {
-  console.log("Server running on http://localhost:5000");
+  console.log(`Server running on http://localhost:${port}`);
 });
